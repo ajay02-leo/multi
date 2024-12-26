@@ -1,13 +1,31 @@
-node('built-in')
-{
-    stage('Continuous Download_master')
-        {
-    git 'https://github.com/sunildevops77/maven.git'
+pipeline {
+    agent any
+    stages {
+        stage('Non-Parallel Stage') {
+            steps {
+                echo "Executing this stage first"
+            }
         }
-    stage('Continuous Build_masterbranch')
-        {
-    sh label: '', script: 'mvn package'
+        stage('Parallel Stage') {
+            parallel {
+                stage('Parallel Test 1') {
+                    steps {
+                        echo "Here trigger job: jenkins_job_1. Triggered at time:"
+                        bat(script: "date -u")
+                        build(job: "jenkins_job_1")
+                    }
+                }
+                stage('Parallel Test 2') {
+                    steps {
+                        echo "Here trigger job: jenkins_job_2. Triggered at time:"
+                        bat(script: "date -u")
+                        build(job: "jenkins_job_2")
+                        echo "Here trigger job: jenkins_job_3. Triggered at time:"
+                        bat(script: """date -u""")
+                        build(job: "jenkins_job_3")
+                    }
+                }
+            }
         }
-
+    }
 }
-
